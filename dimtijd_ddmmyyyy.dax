@@ -1,0 +1,43 @@
+dim date = 
+VAR startdatum =
+    MINX(
+        UNION( ROW( "@max", MAX( 'fct calculatie'[calculatiedatum] ) ), ROW( "@max", MAX( 'fct besteed'[boekdatum] ) ) ),
+        [@max]
+    )
+VAR einddatum =
+    MAXX(
+        UNION( ROW( "@max", MAX( 'fct calculatie'[calculatiedatum] ) ), ROW( "@max", MAX( 'fct besteed'[boekdatum] ) ) ),
+        [@max]
+    )
+RETURN
+    GENERATE (
+        CALENDAR (
+            DATE ( YEAR ( startdatum ), 1, 1 ),
+            DATE ( YEAR ( einddatum ), 12, 31 )
+        ),
+        ROW (
+            "year", YEAR ( [Date] ),
+            "quarter", QUARTER ( [Date] ),
+            "month", MONTH ( [Date] ),
+            "week", WEEKNUM ( [Date] ),
+            "day", DAY ( [Date] ),
+            "mmm", FORMAT ( [Date], "mmm" ),
+            "YYYYMM", FORMAT ( [Date], "YYYY-MM" ),
+            "YYYYQ", FORMAT ( [Date], "YYYY-Q" ),
+            "EOM", EOMONTH ( [Date], 0 ),
+            "today?",
+                IF (
+                    FORMAT ( [Date], "dd/mm/yyyy" ) = FORMAT ( TODAY (), "dd/mm/yyyy" ),
+                    "today",
+                    "not today"
+                ),
+            "dayindex", DATEDIFF ( [Date], TODAY (), DAY ) * -1,
+            "monthindex",
+                INT (
+                    ( YEAR ( [Date] ) - YEAR ( TODAY () ) ) * 12
+                        + MONTH ( [Date] )
+                        - MONTH ( TODAY () )
+                ),
+            "yearindex", INT ( ( YEAR ( [Date] ) - YEAR ( TODAY () ) ) )
+        )
+    )
