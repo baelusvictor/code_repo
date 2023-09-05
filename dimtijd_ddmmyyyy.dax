@@ -1,14 +1,11 @@
 dim date = 
 VAR startdatum =
     MINX(
-        UNION( ROW( "@max", MAX( 'fct calculatie'[calculatiedatum] ) ), ROW( "@max", MAX( 'fct besteed'[boekdatum] ) ) ),
-        [@max]
-    )
+    UNION( ROW( "@max", MIN( 'fct calculatie'[calculatiedatum] ) ), ROW( "@max", MIN( 'fct besteed'[boekdatum] ) ), ROW( "@max", MIN( 'fct werk_code'[dag_gepresteerd_start]) ) ),
+    [@max]
+)
 VAR einddatum =
-    MAXX(
-        UNION( ROW( "@max", MAX( 'fct calculatie'[calculatiedatum] ) ), ROW( "@max", MAX( 'fct besteed'[boekdatum] ) ) ),
-        [@max]
-    )
+    TODAY()+1200 --"31/12/2026"
 RETURN
     GENERATE (
         CALENDAR (
