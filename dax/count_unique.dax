@@ -1,0 +1,24 @@
+Sql	with _stap1 as
+	(
+	SELECT 
+	    count(object_id) over (partition by artikel) as count_uniquekey,
+	    --artikel,
+	    * 
+	FROM "analytics_nonprod_athena"."dim_opdata_fin_ytd_artikel"
+	)
+	select 
+	    *
+	from _stap1
+	where count_uniquekey >1
+	order by artikel
+	
+dax	Count refint= 
+	VAR b_id = 'dim Badge'[BADGENR]
+	VAR calc =
+	CALCULATE(
+	    COUNT('dim Badge'[BADGENR]),
+	    REMOVEFILTERS(),
+	    'dim Badge'[BADGENR]= b_id
+	    )
+	RETURN
+	    calc
