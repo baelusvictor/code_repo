@@ -1,0 +1,6 @@
+PS C:\Users\baeluvi\dbt-datalake> git fetch origin
+PS C:\Users\baeluvi\dbt-datalake> git reset --hard
+HEAD is now at 49878d24 wrong branch sorry
+PS C:\Users\baeluvi\dbt-datalake> git reset --hard origin/master
+HEAD is now at 869dedaf Merged in feature/mm_schedule_refactor (pull request #350)
+PS C:\Users\baeluvi\dbt-datalake> git pull

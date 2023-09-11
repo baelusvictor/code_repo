@@ -1,0 +1,5 @@
+weekindex = 
+VAR todaynum = WEEKDAY( TODAY() )
+VAR startOfWeek = 1
+RETURN
+ROUNDDOWN(('dim datum'[dayindex] + todayNum - startOfWeek - 6)/7,0)

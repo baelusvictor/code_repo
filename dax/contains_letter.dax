@@ -1,0 +1,5 @@
+test routing opdeling obv parob_artikel = 
+VAR _ERR = IFERROR(INT('dim kostobject bridge'[parob_artikel_pk]),0) = 0 -- returns 0 if there is a letter in the column (as opposed to a number), if 0 then true
+VAR _IFLOGIC = IF(_ERR, "routing", "stuklijst") -- if there is a letter in the column then routing else stuklijst
+RETURN
+    _IFLOGIC
