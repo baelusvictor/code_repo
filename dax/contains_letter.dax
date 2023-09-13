@@ -3,3 +3,12 @@ VAR _ERR = IFERROR(INT('dim kostobject bridge'[parob_artikel_pk]),0) = 0 -- retu
 VAR _IFLOGIC = IF(_ERR, "routing", "stuklijst") -- if there is a letter in the column then routing else stuklijst
 RETURN
     _IFLOGIC
+
+
+equivalent sql:
+
+if(
+    try(cast(parob_artikel_PK as bigint)) is null, -- if the column is not a number an error occurs, use try to transform the error lines in null values, these lines are considered routing 
+    'routing', -- fe 35714M714
+    'stuklijst' -- fe 7000000558
+) as is_stuklijst_routing
