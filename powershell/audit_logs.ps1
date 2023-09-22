@@ -16,7 +16,7 @@ foreach ($i in 1..14) {
     $StartString = $BeginTimeVar.ToString("yyyy-MM-ddTHH:mm:ss")
     #$dateString = "download"+$CurrentDate.ToString("yyyy_MM_dd_HH_mm_ss")+"_datum"+$BeginTimeVar.ToString("yyyy_MM_dd")
     $dateString = $BeginTimeVar.ToString("yyyy_MM_dd")
-    $csvFile = "C:\Users\baeluvi\VRT\DataTeam FinanciÃ«n - General\PowerBi\Data Files\AuditLogs\" + $dateString + ".csv"
+    $csvFile = "C:\Users\baeluvi\VRT\DataTeam Financiën - General\PowerBi\Data Files\AuditLogs\" + $dateString + ".csv"
     $activities = (Get-PowerBIActivityEvent -StartDateTime $StartString -EndDateTime $EndString -ResultType JsonString |
     ConvertFrom-Json) | 
     Select Id, RecordType, CreationTime, Operation, OrganizationId, UserType, UserKey, Workload, UserId, ClientIP, UserAgent, Activity, ItemName, WorkSpaceName, DatasetName, ReportName, CapacityId, CapacityName, WorkspaceId, ObjectId, DataflowId, DataflowName, AppName, DataflowAccessTokenRequestParameters, DatasetId, ReportId, IsSuccess, DataflowType, ReportType, RequestId, ActivityId, AppReportId, DistributionMethod, ConsumptionMethod |
