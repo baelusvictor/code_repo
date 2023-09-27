@@ -1,0 +1,8 @@
+Time Intel = 
+SWITCH(
+    TRUE(),
+    CONTAINSSTRING('Field core ytd metrics'[Metrics], "YTD"), "YTD",
+    CONTAINSSTRING('Field core ytd metrics'[Metrics], "YTG"), "YTG",
+    //CONTAINSSTRING('Field core ytd metrics'[Field core ytd metrics], "16"), "YTG",
+    "Som"
+)

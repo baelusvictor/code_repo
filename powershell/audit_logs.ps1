@@ -21,4 +21,6 @@ foreach ($i in 1..14) {
     ConvertFrom-Json) | 
     Select Id, RecordType, CreationTime, Operation, OrganizationId, UserType, UserKey, Workload, UserId, ClientIP, UserAgent, Activity, ItemName, WorkSpaceName, DatasetName, ReportName, CapacityId, CapacityName, WorkspaceId, ObjectId, DataflowId, DataflowName, AppName, DataflowAccessTokenRequestParameters, DatasetId, ReportId, IsSuccess, DataflowType, ReportType, RequestId, ActivityId, AppReportId, DistributionMethod, ConsumptionMethod |
     Export-Csv -NoTypeInformation -Path $csvFile 
+
+    Write-Host "Extract complete"
 }

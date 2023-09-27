@@ -228,7 +228,7 @@ if ($Csv)
     $historyItems |
         Select-Object -Property id, refreshType, startTime, endTime, status, WorkspaceName,  WorkspaceId, DatasetName, DatasetId,`ErrorCode, ClusterUri,ActivityId,RequestId, Timestamp |
         Export-Csv -Path $csvFilePath -Delimiter ";" -Force -NoTypeInformation
-    Write-Host "CSV log file '$csvFilePath' createds"
+    Write-Host "CSV log file '$csvFilePath' created"
 }
 
 # create JSON file
