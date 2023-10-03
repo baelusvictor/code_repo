@@ -1,0 +1,1 @@
+coalesce(nullif(sap_nummer,''), 'Empty')!='Empty'

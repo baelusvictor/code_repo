@@ -1,5 +1,13 @@
-﻿#GET https://api.powerbi.com/v1.0/myorg/groups/f72f3129-587b-4536-872e-65398e15a28b/datasets/3058a228-9d2c-4ddc-9998-5c53aea14512/refreshes
+﻿Login-PowerBI
 
-#https://app.powerbi.com/groups/f72f3129-587b-4536-872e-65398e15a28b/datasets/3058a228-9d2c-4ddc-9998-5c53aea14512/details?experience=power-bi
+#audit logs example hardcoded
+$dataset = "9fb4ee53-334b-4880-ac5b-0d420e4ab6e3"
 
-Invoke-PowerBIRestMethod -Url "https://api.powerbi.com/v1.0/myorg/groups/f72f3129-587b-4536-872e-65398e15a28b/datasets/3058a228-9d2c-4ddc-9998-5c53aea14512/refreshes" -Method GET
+#refreshes the specified dataset
+$refresh = Invoke-PowerBIRestMethod -Url "https://api.powerbi.com/v1.0/myorg/datasets/$dataset/refreshes" -Method POST -Body ("9fb4ee53-334b-4880-ac5b-0d420e4ab6e3")
+
+#logs the metadata concerning the specified dataset
+$refreshlog = Invoke-PowerBIRestMethod -Url "https://api.powerbi.com/v1.0/myorg/datasets/$dataset/refreshes" -Method GET -Body ($dataset) #| ConvertFrom-Json
+
+$refresh
+$refreshlog
