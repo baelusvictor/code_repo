@@ -14,4 +14,6 @@ $csvFile = "C:\Users\baeluvi\OneDrive - Cronos\Bureaublad\test.json"
 
 
 $refresh = (Invoke-PowerBIRestMethod -Url "https://api.powerbi.com/v1.0/myorg/admin/capacities/refreshables?$expand=capacity,group" -Method GET -Body ($dataset))
-$refresh | Export-Json -NoTypeInformation -Path $csvFile 
+#$refresh | Export-Json -NoTypeInformation -Path $csvFile 
+
+$refresh
