@@ -9,7 +9,7 @@ $Datasetsfolder =  $FilePath + "Datasets\" + $Datum + ".json"
 Write-Output "script activited on '$Datum'"
 
 #api calls
-$datasets = Get-PowerBIDataset -Scope Organization #| Where-Object { $_.Name -eq "source_finance" }
+$datasets = Get-PowerBIDataset #-Scope Organization #| Where-Object { $_.Name -eq "source_finance" }
 Write-Output $datasets.name
 
 $refresh = @()
@@ -28,6 +28,11 @@ Write-Output "json files datasets saved in '$Datasetsfolder'"
 
 (ConvertTo-Json $refresh -Depth 3) | Out-File -FilePath $Refreshfolder -Force
 Write-Output "json files refreshlogs saved in: '$Refreshfolder'"
+
+#refresh
+$auditlogs = "9fb4ee53-334b-4880-ac5b-0d420e4ab6e3"
+$refresh = Invoke-PowerBIRestMethod -Url "https://api.powerbi.com/v1.0/myorg/datasets/$auditlogs/refreshes" -Method POST -Body ($auditlogs)
+$refresh
 
 
 

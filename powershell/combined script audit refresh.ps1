@@ -57,6 +57,7 @@
     Write-Host "start refresh PBI service"
     #audit logs example hardcoded refresh
     $auditlogs = "9fb4ee53-334b-4880-ac5b-0d420e4ab6e3"
-    $refresh = Invoke-PowerBIRestMethod -Url "https://api.powerbi.com/v1.0/myorg/datasets/$dataset/refreshes" -Method POST -Body ($dataset)
+    $refresh = Invoke-PowerBIRestMethod -Url "https://api.powerbi.com/v1.0/myorg/datasets/$auditlogs/refreshes" -Method POST -Body ($auditlogs)
+    $refresh
     #$refreshlog = Invoke-PowerBIRestMethod -Url "https://api.powerbi.com/v1.0/myorg/datasets/$dataset/refreshes" -Method GET -Body ($dataset) #| ConvertFrom-Json
     #$refreshlog

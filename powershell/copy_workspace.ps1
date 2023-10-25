@@ -80,6 +80,7 @@ while (!$source_workspace_ID) {
 }
 
 # STEP 2.2: Get the target workspace
+# dev = "5986de94-88f7-4d71-9e9e-87a464e51ebe"
 $target_workspace_ID = "" 
 while (!$target_workspace_ID) {
     $target_workspace_name = if (-not($TargetWorkspaceName)) {

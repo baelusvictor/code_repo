@@ -1,0 +1,17 @@
+﻿EVALUATE
+//GROUPBY (
+	GROUPBY (
+	    FILTER (
+	        ADDCOLUMNS (
+	            SUMMARIZE ( 'fct Auditlogs', 'dim Gebruiker'[UserId - Copy], 'dim Datum'[Date] ),
+	            "@CALC", [view]
+	        ),
+	        NOT ISBLANK ( [@CALC] ) && 'dim Gebruiker'[UserId - Copy] = "victor.baelus@vrt.be"
+	    ),
+	    'dim Gebruiker'[UserId - Copy], 
+	    'dim Datum'[Date]
+	    ,
+	    "days_with_activity_per_user", COUNTX ( CURRENTGROUP (), [@CALC] )
+	)
+ORDER BY 'dim Gebruiker'[UserId - Copy] DESC
+,    'dim Datum'[Date] ASC
