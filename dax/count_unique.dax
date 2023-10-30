@@ -12,7 +12,7 @@ Sql	with _stap1 as
 	where count_uniquekey >1
 	order by artikel
 	
-dax	Count refint= 
+dax	UniKEY= 
 	VAR b_id = 'dim Badge'[BADGENR]
 	VAR calc =
 	CALCULATE(

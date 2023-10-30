@@ -1,0 +1,37 @@
+_8 dyniamisch budget = 
+VAR _limitdate = [_datum vanaf wanneer dynamische prognose]
+VAR _jaartotaal =
+    CALCULATE(
+        [_aanbod intern prognose NO IF],
+        REMOVEFILTERS( 'dim date dbt' ),
+        VALUES( 'dim date dbt'[year_actual] )
+    )
+VAR _prognoselimit =
+    CALCULATE(
+        [_2 prognose ytd],
+        'dim date dbt'[date_day] = _limitdate
+    )
+VAR _actuallimit =
+    CALCULATE(
+        [_4 werkelijkheid ytd],
+        'dim date dbt'[date_day] = _limitdate
+    )
+VAR _teller = _jaartotaal - _actuallimit
+VAR _noemer = _jaartotaal - _prognoselimit
+VAR _deling = DIVIDE( _teller, _noemer )
+VAR _SUMX =
+    SUMX(
+        ADDCOLUMNS(
+            VALUES( 'dim date dbt'[date_day] ),
+            "@prognose",
+                IF(
+                    'dim date dbt'[date_day]
+                        > [_datum vanaf wanneer dynamische prognose],
+                    _deling * [_aanbod intern prognose NO IF],
+                    [Aanbod Intern]
+                )
+        ),
+        [@prognose]
+    )
+RETURN
+    _SUMX
