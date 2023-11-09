@@ -1,0 +1,166 @@
+// via calculated columns 
+Budget dyn = 
+VAR LastMonthAvailable = month('precalc table AB'[YYYY-MM]) 
+VAR LastYearAvailable = year('precalc table AB'[YYYY-MM])  
+VAR objectid = 'precalc table AB'[Object_id]
+VAR v = 'precalc table AB'[Versie]
+VAR par = 'precalc table AB'[Parameter month]
+VAR SelectMonth = 'precalc table AB'[Parameter month]-1
+VAR SelectYYYYMM =
+    CALCULATE(
+        MAX( 'precalc table AB'[YYYY-MM] ),
+        REMOVEFILTERS( ),
+        month('precalc table AB'[YYYY-MM])  = SelectMonth
+    )
+VAR CurrentActuals =
+    CALCULATE(
+        SUM( 'precalc table AB'[A YTD] ),
+        REMOVEFILTERS( ),
+        'precalc table AB'[yyyy-mm] = SelectYYYYMM,
+        'precalc table AB'[object_id] = objectid,
+        'precalc table AB'[Versie] = v,
+        'precalc table AB'[Parameter month] = par
+    )
+VAR CurrentBudget =
+    CALCULATE(
+        SUM( 'precalc table AB'[B YTD] ),
+        REMOVEFILTERS( ),
+        'precalc table AB'[yyyy-mm] = SelectYYYYMM,
+        'precalc table AB'[object_id] = objectid,
+        'precalc table AB'[Versie] = v,
+        'precalc table AB'[Parameter month] = par
+    )
+VAR BudgetMax =
+    CALCULATE(
+        SUM( 'precalc table AB'[Budget] ),
+        REMOVEFILTERS( ),
+        year('precalc table AB'[YYYY-MM])  = LastYearAvailable,
+        'precalc table AB'[object_id] = objectid,
+        'precalc table AB'[Versie] = v,
+        'precalc table AB'[Parameter month] = par
+    )
+VAR AdjustmentFactor =
+    DIVIDE(
+        BudgetMax - CurrentActuals,
+        BudgetMax - CurrentBudget
+    )
+VAR Result =
+    IF(
+        'precalc table AB'[YYYY-MM] > SelectYYYYMM,
+        AdjustmentFactor * 'precalc table AB'[Budget],
+        'precalc table AB'[Actuals]
+    )
+RETURN
+    Result
+
+// via dax
+// Dit is de moeilijkste measure in het model, al is eigenljk enkel de VAR allocation factor geavanceerd
+// Hier wordt berekend hoeveel actuals er nog gaan uitgegeven worden, in de veronderstelling dat het volledige budget wordt opgebruikt.
+// De A YTG = B YTG, maar dan aangepast met een factor
+// Indien de actuals achterlopen, dan is deze factor > 1; lopen de actuals voor, dan is deze factor < 1
+// Deze factor blijft constant voor elke toekomstige maand
+VAR CurrentYear = SELECTEDVALUE( 'date'[Year] )
+VAR SelectMonth = SELECTEDVALUE( par1_12[Parameter] ) --VAR FilterYYYYMM = CALCULATE(MAX('date'[yyyy-mm]), 'date'[Year] = CurrentYear, 'date'[Month Number] = SelectMonth)
+VAR SelectYYYYMM =
+    CALCULATE(
+        MAX( 'fct actuals'[yyyymm] ),
+        REMOVEFILTERS( 'date' ),
+        'date'[Year] = CurrentYear,
+        'date'[Month Number] = SelectMonth
+    ) -- VAR CurrentYear = SELECTEDVALUE( 'date'[Year] )
+VAR CurrentActuals =
+    CALCULATE(
+        [Besteed YTD],
+        REMOVEFILTERS( 'date' ),
+        'date'[yyyy-mm] = SelectYYYYMM
+    )
+VAR CurrentBudget =
+    CALCULATE(
+        [B YTD og],
+        REMOVEFILTERS( 'date' ),
+        'date'[yyyy-mm] = SelectYYYYMM
+    )
+VAR BudgetMax = [B allyear]
+VAR AdjustmentFactor =
+    CALCULATE(
+        DIVIDE(
+            BudgetMax - CurrentActuals,
+            BudgetMax - CurrentBudget
+        ),
+        'date'[yyyy-mm] <= SelectYYYYMM
+    )
+VAR Act = [Besteed YTD]
+VAR ForecastedAmount =
+    CALCULATE(
+        [Budget basic] * AdjustmentFactor,
+        KEEPFILTERS( 'date'[yyyy-mm] > SelectYYYYMM )
+    )
+VAR Result = Act + ForecastedAmount // wordt hier niet gebruikt, dit is voornamelijk voor de grafieken
+RETURN
+    CurrentActuals
+
+// via sql
+
+var version = "$test"; // TODO: Replace this with the name of your developer perspective
+
+// Remove tables, measures, columns and hierarchies that are not part of the perspective:
+// This part is simple but drastic, only the tables in perspective will remain
+// Note that there is no mention of annotations yet
+foreach(var t in Model.Tables.ToList()) {
+    if(!t.InPerspective[version]) t.Delete();
+    else {
+        foreach(var m in t.Measures.ToList()) if(!m.InPerspective[version]) m.Delete();   
+        foreach(var c in t.Columns.ToList()) if(!c.InPerspective[version]) c.Delete();
+        foreach(var h in t.Hierarchies.ToList()) if(!h.InPerspective[version]) h.Delete();
+    }
+}
+
+// Remove user perspectives based on annotations and all developer perspectives:
+foreach(var p in Model.Perspectives.ToList()) {
+    if(p.Name.StartsWith("`$`")) p.Delete();
+
+    // Keep all other perspectives that do not have the "DevPerspectives" annotation, while removing
+    // those that have the annotation, if <version> is not specified in the annotation:
+    if(p.GetAnnotation("DevPerspectives") != null && !p.GetAnnotation("DevPerspectives").Contains(version)) 
+        p.Delete();
+}
+
+// Remove data sources based on annotations:
+foreach(var ds in Model.DataSources.ToList()) {
+    if(ds.GetAnnotation("DevPerspectives") == null) continue;
+    if(!ds.GetAnnotation("DevPerspectives").Contains(version)) ds.Delete();
+}
+
+// Remove roles based on annotations:
+foreach(var r in Model.Roles.ToList()) {
+    if(r.GetAnnotation("DevPerspectives") == null) continue;
+    if(!r.GetAnnotation("DevPerspectives").Contains(version)) r.Delete();
+}
+
+// Modify measures based on annotations:
+foreach(Measure m in Model.AllMeasures) {
+    var expr = m.GetAnnotation(version + "_Expression"); if(expr == null) continue;
+    m.Expression = expr;
+    m.FormatString = m.GetAnnotation(version + "_FormatString");
+    m.Description = m.GetAnnotation(version + "_Description");    
+}
+
+// Set partition queries according to annotations:
+foreach(Table t in Model.Tables) {
+    var queryWithPlaceholders = t.GetAnnotation(version + "_PartitionQuery"); if(queryWithPlaceholders == null) continue;
+    
+    // Loop through all partitions in this table:
+    foreach(Partition p in t.Partitions) {
+        
+        var finalQuery = queryWithPlaceholders;
+
+        // Replace all placeholder values:
+        foreach(var placeholder in p.Annotations.Keys) {
+            finalQuery = finalQuery.Replace("%" + placeholder + "%", p.GetAnnotation(placeholder));
+        }
+
+        p.Query = finalQuery;
+    }
+}
+
+// TODO: Modify other objects based on annotations, if applicable...
