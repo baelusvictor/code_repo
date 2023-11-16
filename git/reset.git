@@ -1,6 +1,4 @@
 git fetch origin
 git reset --hard
-HEAD is now at 49878d24 wrong branch sorry
 git reset --hard origin/master
-HEAD is now at 869dedaf Merged in feature/mm_schedule_refactor (pull request #350)
-PS C:\Users\baeluvi\dbt-datalake> git pull
+ git pull
