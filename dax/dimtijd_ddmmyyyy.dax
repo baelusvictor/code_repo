@@ -13,6 +13,7 @@ RETURN
             DATE ( YEAR ( einddatum ), 12, 31 )
         ),
         ROW (
+            "datekey", YEAR ( [Date] ) * 10000 + MONTH ( [Date] ) * 100 + DAY ( [Date] ),
             "year", YEAR ( [Date] ),
             "quarter", QUARTER ( [Date] ),
             "month", MONTH ( [Date] ),
