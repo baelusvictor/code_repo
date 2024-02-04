@@ -1,0 +1,96 @@
+﻿EVALUATE
+/************************************************************************************************************************************************
+get the full M code for each of your tables, then filter out the part that refers to the table upstream so you can monitor dependencies
+first determine where this part starts, then where it ends, so u can keep the text in between
+underlying logic is applied specificaly for the VRT datalake, as structured in underlying query:
+
+let
+    Source = AmazonAthena.Databases("Simba Athena", null),
+    AwsDataCatalog_Database = Source{[Name="AwsDataCatalog",Kind="Database"]}[Data],
+    Schema = AwsDataCatalog_Database{[Name=source_athena,Kind="Schema"]}[Data],
+    Table = Schema{[Name="            <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 1) determine this point
+			
+	fct_opdata_fin_sap_vim            <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 3) this is the part we want to isolate
+			
+	",Kind="Table"]}[Data],           <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 2) determine this point
+************************************************************************************************************************************************/
+	
+	VAR _infotabel = INFO.PARTITIONS()
+	VAR _parse1 = ADDCOLUMNS( // this step contains building blocks that are used for the next step which contains the actuals data we want
+		_infotabel,
+		"@left_position", SEARCH(
+			"Schema{[Name=",
+			[QueryDefinition],
+			1,
+			0 // blanks will give errors when we use it in calculations
+		),
+		"@right_position", FIND(
+			",Kind=",
+			[QueryDefinition],
+			SEARCH( //",Kind=" returns multiple times in the M expression, we are only interested in the first time it appears since our left position (same dax as @left_position)
+				"Schema{[Name=",
+				[QueryDefinition],
+				1,
+				1
+			),
+			0
+		)
+	)
+	VAR _parse2 = ADDCOLUMNS(
+		_parse1,
+		"@in_between", IF(
+			[@left_position] <> 0,
+			MID(
+				[QueryDefinition],
+				[@left_position] + 14,
+				[@right_position] - [@left_position] - 15
+			)
+		)
+	)
+	VAR _select = SELECTCOLUMNS(
+		_parse2,
+		"Name", 		LEFT(
+			[Name],(
+			FIND(
+				"-",
+				[Name],
+				1,
+				100
+			)-1)
+		),
+		"source_athena", [@in_between],
+		"TableID", [TableID]
+	)
+	
+	VAR _source =
+		 FILTER(_select, [source_athena] <> BLANK())
+		 
+/***********************************************************************************************************************************************/
+	VAR _tables = SELECTCOLUMNS(
+		INFO.TABLES(),
+		"TableID",
+		[ID],
+		"EditTable",
+		[ModifiedTime],
+		"ModelID",
+		[ModelID]
+	)
+	VAR _model = SELECTCOLUMNS(
+		INFO.MODEL(),
+		"ModelID",
+		[ID],
+		"Model",
+		[Description],
+		"EditModel",
+		[ModifiedTime]
+	)
+	VAR _combined_dim = NATURALLEFTOUTERJOIN(
+		_tables,
+		_model
+	)
+	VAR _combined_final = NATURALLEFTOUTERJOIN(
+		_source,
+		_combined_dim
+	)
+	RETURN
+		_combined_final

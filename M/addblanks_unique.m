@@ -1,0 +1,1 @@
+    AddC_whitespaces = Table.AddColumn(PriorStep, "Custom", each [Onderdeel3] & Text.Repeat(Character.FromNumber(160), [Index]))
