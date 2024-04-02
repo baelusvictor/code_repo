@@ -1,0 +1,42 @@
+// DAX Query
+DEFINE
+    VAR __DS0FilterTable =
+        TREATAS(
+            { "inclusief herhaling" },
+            'ext switch #afleveringen'[herhaling uitzending?]
+        )
+    VAR __DS0FilterTable3 =
+        TREATAS( { "Universe" }, 'fct programma'[audiencename] )
+    VAR __DS0FilterTable5 =
+        TREATAS( { "VRT MAX" }, 'dim artikel'[klant] )
+    VAR __DS0Core =
+        SUMMARIZECOLUMNS(
+            'dim artikel'[artikel nr + beschr],
+            ROLLUPADDISSUBTOTAL(
+                ROLLUPGROUP(
+                    'dim whatson'[episode+won_id],
+                    'fct programma'[net]
+                ),
+                "IsDM0Total"
+            ),
+            __DS0FilterTable,
+            __DS0FilterTable3,
+            __DS0FilterTable5,
+            "v_kijkers", [#kijkers],
+            "v_minuten_switch", [#minuten switch],
+            "v_uur_gekeken", [#uur gekeken],
+            "v_uitzendingen", [#uitzendingen],
+            "TOTAAL_afleveringen_artikel", [TOTAAL #afleveringen artikel],
+            "TOTAAL_kost_artikel", [TOTAAL kost artikel],
+            "TOTAAL_kost_artikel_reeds_uitgezonden", [TOTAAL kost artikel reeds uitgezonden],
+            "TOTAAL_kost_gemaakteminuut", [TOTAAL kost/gemaakteminuut],
+            "TOTAAL_kost_1000uurgekeken", [TOTAAL kost/1000uurgekeken]
+        )
+
+EVALUATE
+__DS0Core
+ORDER BY
+    'dim artikel'[artikel nr + beschr],
+    [IsDM0Total],
+    'dim whatson'[episode+won_id],
+    'fct programma'[net]

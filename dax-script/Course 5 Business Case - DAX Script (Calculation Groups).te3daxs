@@ -1,0 +1,179 @@
+------------------------------------------
+-- Calculation Group: 'CG - Phase by Date'
+------------------------------------------
+CALCULATIONGROUP 'CG - Phase by Date'[Name]    Precedence = 5
+
+    CALCULATIONITEM "Order Date" = SELECTEDMEASURE ()
+        Ordinal = 0
+
+    CALCULATIONITEM "Ship Date" = 
+        CALCULATE (
+            SELECTEDMEASURE (),
+            USERELATIONSHIP (
+                'Date'[Date],
+                'Orders'[Ship Date]
+            )
+        )
+        Ordinal = 1
+
+    CALCULATIONITEM "Billing Date" = 
+        CALCULATE (
+            SELECTEDMEASURE (),
+            USERELATIONSHIP (
+                'Date'[Date],
+                'Orders'[Billing Date]
+            )
+        )
+        Ordinal = 2
+
+---------------------------------------------
+-- Calculation Group: 'CG - Rolling Averages'
+---------------------------------------------
+CALCULATIONGROUP 'CG - Rolling Averages'[Name]    Precedence = 6
+
+    CALCULATIONITEM "No aggregation" = SELECTEDMEASURE ()
+        Ordinal = 0
+
+    CALCULATIONITEM "1-Week Average" = 
+        VAR _DatesInRange =
+            CALCULATETABLE (
+                DATESINPERIOD (
+                    'Date'[Date],
+                    LASTDATE ( 'Date'[Date] ),
+                    -7,
+                    DAY
+                ),
+                'Date'[IsDateInScope] = TRUE
+            )
+        RETURN
+            AVERAGEX (
+                _DatesInRange,
+                SELECTEDMEASURE ( )
+            )
+        Ordinal = 1
+
+    CALCULATIONITEM "1-Week Sum" = 
+        VAR _DatesInRange =
+            CALCULATETABLE (
+                DATESINPERIOD (
+                    'Date'[Date],
+                    LASTDATE ( 'Date'[Date] ),
+                    -7,
+                    DAY
+                ),
+                'Date'[IsDateInScope] = TRUE
+            )
+        RETURN
+            SUMX (
+                _DatesInRange,
+                SELECTEDMEASURE ( )
+            )
+        Ordinal = 2
+
+    CALCULATIONITEM "2-Week Average" = 
+        VAR _DatesInRange =
+            CALCULATETABLE (
+                DATESINPERIOD (
+                    'Date'[Date],
+                    LASTDATE ( 'Date'[Date] ),
+                    -14,
+                    DAY
+                ),
+                'Date'[IsDateInScope] = TRUE
+            )
+        RETURN
+            AVERAGEX (
+                _DatesInRange,
+                SELECTEDMEASURE ( )
+            )
+        Ordinal = 3
+
+    CALCULATIONITEM "2-Week Sum" = 
+        VAR _DatesInRange =
+            CALCULATETABLE (
+                DATESINPERIOD (
+                    'Date'[Date],
+                    LASTDATE ( 'Date'[Date] ),
+                    -14,
+                    DAY
+                ),
+                'Date'[IsDateInScope] = TRUE
+            )
+        RETURN
+            SUMX (
+                _DatesInRange,
+                SELECTEDMEASURE ( )
+            )
+        Ordinal = 4
+
+    CALCULATIONITEM "4-Week Average" = 
+        VAR _DatesInRange =
+            CALCULATETABLE (
+                DATESINPERIOD (
+                    'Date'[Date],
+                    LASTDATE ( 'Date'[Date] ),
+                    -28,
+                    DAY
+                ),
+                'Date'[IsDateInScope] = TRUE
+            )
+        RETURN
+            AVERAGEX (
+                _DatesInRange,
+                SELECTEDMEASURE ( )
+            )
+        Ordinal = 5
+
+    CALCULATIONITEM "4-Week Sum" = 
+        VAR _DatesInRange =
+            CALCULATETABLE (
+                DATESINPERIOD (
+                    'Date'[Date],
+                    LASTDATE ( 'Date'[Date] ),
+                    -28,
+                    DAY
+                ),
+                'Date'[IsDateInScope] = TRUE
+            )
+        RETURN
+            SUMX (
+                _DatesInRange,
+                SELECTEDMEASURE ( )
+            )
+        Ordinal = 6
+
+    CALCULATIONITEM "12-Month Average" = 
+        VAR _DatesInRange =
+            CALCULATETABLE (
+                DATESINPERIOD (
+                    'Date'[Date],
+                    LASTDATE ( 'Date'[Date] ),
+                    -12,
+                    MONTH
+                ),
+                'Date'[IsDateInScope] = TRUE
+            )
+        RETURN
+            AVERAGEX (
+                _DatesInRange,
+                SELECTEDMEASURE ( )
+            )
+        Ordinal = 7
+
+    CALCULATIONITEM "12-Month Sum" = 
+        VAR _DatesInRange =
+            CALCULATETABLE (
+                DATESINPERIOD (
+                    'Date'[Date],
+                    LASTDATE ( 'Date'[Date] ),
+                    -12,
+                    MONTH
+                ),
+                'Date'[IsDateInScope] = TRUE
+            )
+        RETURN
+            SUMX (
+                _DatesInRange,
+                SELECTEDMEASURE ( )
+            )
+        Ordinal = 8

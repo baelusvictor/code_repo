@@ -1,0 +1,180 @@
+-----------------------------------------
+-- Calculation Group: 'weergave getal'
+-----------------------------------------
+CALCULATIONGROUP 'ext weergave getal (calculation group)'[Weergave]
+    Description =
+        "Kies of je een bedrag in €, K, of M wil zien, en of het afgerond is."
+
+    -----------------------------------------
+    -- CALCULATIONITEM "/1€"
+    -----------------------------------------
+
+    CALCULATIONITEM "/1€" =
+        VAR _SkipConversion =
+            SEARCH( "txt", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "%", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "#", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "dat", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+        VAR _if =
+            IF(
+                _SkipConversion,
+                SELECTEDMEASURE( ),
+                SELECTEDMEASURE( )
+            )
+        RETURN
+            _if
+    Ordinal = 1,
+    FormatString =
+        VAR _SkipConversion =
+            SEARCH( "txt", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "%", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "#", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "dat", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+        VAR _if = IF( NOT ( _SkipConversion ), "#,0", SELECTEDMEASUREFORMATSTRING() )
+        RETURN
+            _if
+
+    -----------------------------------------
+    -- CALCULATIONITEM "/1,00€"
+    -----------------------------------------
+
+    CALCULATIONITEM "/1,00€" =
+        VAR _SkipConversion =
+            SEARCH( "txt", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "%", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "#", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "dat", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+        VAR _if =
+            IF(
+                _SkipConversion,
+                SELECTEDMEASURE( ),
+                SELECTEDMEASURE( )
+            )
+        RETURN
+            _if
+    Ordinal = 2,
+    FormatString =
+        VAR _SkipConversion =
+            SEARCH( "txt", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "%", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "#", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "dat", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+        VAR _if = IF( NOT ( _SkipConversion ), "#,0.00" , SELECTEDMEASUREFORMATSTRING() )
+        RETURN
+            _if
+
+    -----------------------------------------
+    -- CALCULATIONITEM "/1K"
+    -----------------------------------------
+
+    CALCULATIONITEM "/1K" =
+        VAR _SkipConversion =
+            SEARCH( "txt", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "%", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "#", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "dat", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+        VAR _if =
+            IF(
+                _SkipConversion,
+                SELECTEDMEASURE( ),
+                SELECTEDMEASURE( ) / 1000
+            )
+        RETURN
+            _if
+    Ordinal = 3,
+    FormatString =
+        VAR _SkipConversion =
+            SEARCH( "txt", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "%", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "#", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "dat", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+        VAR _if = IF( NOT ( _SkipConversion ), "#,0" , SELECTEDMEASUREFORMATSTRING() )
+        RETURN
+            _if
+
+    -----------------------------------------
+    -- CALCULATIONITEM "/1,00K"
+    -----------------------------------------
+
+    CALCULATIONITEM "/1,00K" =
+        VAR _SkipConversion =
+            SEARCH( "txt", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "%", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "#", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "dat", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+        VAR _if =
+            IF(
+                _SkipConversion,
+                SELECTEDMEASURE( ),
+                SELECTEDMEASURE( ) / 1000
+            )
+        RETURN
+            _if
+    Ordinal = 4,
+    FormatString =
+        VAR _SkipConversion =
+            SEARCH( "txt", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "%", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "#", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "dat", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+        VAR _if = IF( NOT ( _SkipConversion ), "#,0.00" , SELECTEDMEASUREFORMATSTRING() )
+        RETURN
+            _if
+
+    -----------------------------------------
+    -- CALCULATIONITEM "/1M"
+    -----------------------------------------
+
+    CALCULATIONITEM "/1M" =
+        VAR _SkipConversion =
+            SEARCH( "txt", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "%", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "#", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "dat", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+        VAR _if =
+            IF(
+                _SkipConversion,
+                SELECTEDMEASURE( ),
+                SELECTEDMEASURE( ) / 1000000
+            )
+        RETURN
+            _if
+    Ordinal = 5,
+    FormatString =
+        VAR _SkipConversion =
+            SEARCH( "txt", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "%", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "#", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "dat", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+        VAR _if = IF( NOT ( _SkipConversion ), "#,0" , SELECTEDMEASUREFORMATSTRING() )
+        RETURN
+            _if
+
+    -----------------------------------------
+    -- CALCULATIONITEM "/1,00M"
+    -----------------------------------------
+
+    CALCULATIONITEM "/1,00M" =
+        VAR _SkipConversion =
+            SEARCH( "txt", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "%", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "#", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "dat", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+        VAR _if =
+            IF(
+                _SkipConversion,
+                SELECTEDMEASURE( ),
+                SELECTEDMEASURE( ) / 1000000
+            )
+        RETURN
+            _if
+    Ordinal = 6,
+    FormatString =
+        VAR _SkipConversion =
+            SEARCH( "txt", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "%", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "#", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+                || SEARCH( "dat", SELECTEDMEASURENAME( ), 1, 0 ) > 0
+        VAR _if = IF( NOT ( _SkipConversion ), "#,0.00" , SELECTEDMEASUREFORMATSTRING() )
+        RETURN
+            _if

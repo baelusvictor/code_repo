@@ -1,0 +1,128 @@
+------------------------------------
+-- Measure: [_1 prognose jaartotaal]
+------------------------------------
+MEASURE metrics[_1 prognose jaartotaal] = 
+    CALCULATE(
+        [_aanbod intern prognose NO IF],
+        REMOVEFILTERS('dim date dbt'),
+        VALUES('dim date dbt'[year_actual]
+    ))
+    DisplayFolder = "Capaciteit"
+
+-----------------------------
+-- Measure: [_2 prognose ytd]
+-----------------------------
+MEASURE metrics[_2 prognose ytd] = 
+    CALCULATE(
+        [_aanbod intern prognose NO IF],
+        DATESYTD('dim date dbt'[date_day])
+    )
+    DisplayFolder = "Capaciteit"
+
+--------------------------------------
+-- Measure: [_3 prognose ytd 120d EOM]
+--------------------------------------
+MEASURE metrics[_3 prognose ytd 120d EOM] = 
+    VAR _limitdate = [_datum vanaf wanneer dynamische prognose]
+    VAR _ytdlimit = CALCULATE([_2 prognose ytd], 'dim date dbt'[date_day] = _limitdate)
+    RETURN
+        _ytdlimit
+    DisplayFolder = "Capaciteit"
+
+----------------------------------
+-- Measure: [_4 werkelijkheid ytd]
+----------------------------------
+MEASURE metrics[_4 werkelijkheid ytd] = 
+    CALCULATE(
+        [Aanbod Intern], 
+        DATESYTD('dim date dbt'[date_day])
+        )
+    DisplayFolder = "Capaciteit"
+
+-------------------------------------------
+-- Measure: [_5 werkelijkheid ytd 120d EOM]
+-------------------------------------------
+MEASURE metrics[_5 werkelijkheid ytd 120d EOM] = 
+    VAR _limitdate = [_datum vanaf wanneer dynamische prognose]
+    VAR _ytdlimit = CALCULATE([_4 werkelijkheid ytd], 'dim date dbt'[date_day] = _limitdate)
+    RETURN
+        _ytdlimit
+    DisplayFolder = "Capaciteit"
+
+-------------------------------------------------------
+-- Measure: [_6 % herverdelingsfactor dynamisch budget]
+-------------------------------------------------------
+MEASURE metrics[_6 % herverdelingsfactor dynamisch budget] = 
+    VAR _teller = [_1 prognose jaartotaal] - [_5 werkelijkheid ytd 120d EOM]
+    VAR _noemer = [_1 prognose jaartotaal] - [_3 prognose ytd 120d EOM]
+    VAR _deling = DIVIDE(_teller, _noemer)
+    RETURN
+        _deling
+    DisplayFolder = "Capaciteit"
+
+---------------------------------
+-- Measure: [_7 dynamisch budget]
+---------------------------------
+MEASURE metrics[_7 dynamisch budget] = 
+    //omdat je een ALS functie sommeert gaan je subtotalen niet kloppen tezij je een iterator SUMX gebruikt
+    SUMX(
+        ADDCOLUMNS(
+            VALUES('dim date dbt'[date_day]),
+            "@prognose", 
+            IF(
+                'dim date dbt'[date_day]>[_datum vanaf wanneer dynamische prognose], 
+                [_6 % herverdelingsfactor dynamisch budget]*[_aanbod intern prognose IF],
+                [Aanbod Intern]
+            )
+        ),
+        [@prognose]
+    )
+    DisplayFolder = "Capaciteit"
+
+----------------------------------
+-- Measure: [_8 dyniamisch budget]
+----------------------------------
+MEASURE metrics[_8 dyniamisch budget] = 
+    VAR _limitdate = [_datum vanaf wanneer dynamische prognose]
+    VAR _jaartotaal =
+        CALCULATE(
+            [_aanbod intern prognose NO IF],
+            REMOVEFILTERS( 'dim date dbt' ),
+            VALUES( 'dim date dbt'[year_actual] )
+        )
+    VAR _prognoselimit =
+        CALCULATE(
+            [_2 prognose ytd],
+            'dim date dbt'[date_day] = _limitdate
+        )
+    VAR _actuallimit =
+        CALCULATE(
+            [_4 werkelijkheid ytd],
+            'dim date dbt'[date_day] = _limitdate
+        )
+    VAR _teller = _jaartotaal - _actuallimit
+    VAR _noemer = _jaartotaal - _prognoselimit
+    VAR _deling = DIVIDE( _teller, _noemer )
+    VAR _SUMX =
+        SUMX(
+            ADDCOLUMNS(
+                VALUES( 'dim date dbt'[date_day] ),
+                "@prognose",
+                    IF(
+                        'dim date dbt'[date_day]
+                            > [_datum vanaf wanneer dynamische prognose],
+                        _deling * [_aanbod intern prognose NO IF],
+                        [Aanbod Intern]
+                    )
+            ),
+            [@prognose]
+        )
+    RETURN
+        _SUMX
+    DisplayFolder = "Capaciteit"
+
+------------------------------------------------------
+-- Measure: [_datum vanaf wanneer dynamische prognose]
+------------------------------------------------------
+MEASURE metrics[_datum vanaf wanneer dynamische prognose] = EOMONTH(MAX('dim date dbt'[today]), 4)
+    DisplayFolder = "Capaciteit"
