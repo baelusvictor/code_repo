@@ -1,8 +1,7 @@
+cd C:\Users\victor.baelus\github\folder-git\powershell
+#cd C:\Users\victo\github\folder-git\powershell 
 
-
-cd C:\Users\victo\github\folder-git\powershell 
-
-#Login-PowerBI
+Login-PowerBI
 
 # test
 ./hi.ps1 

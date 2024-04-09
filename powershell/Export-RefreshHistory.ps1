@@ -222,14 +222,14 @@ for ($i=0; $i -lt $historyItems.Length; $i++)
 }
 
 # create CSV file - remove serviceException column
-if ($Csv) 
-{
-    $csvFilePath = "$Path\$CsvFile"
-    $historyItems |
-        Select-Object -Property id, refreshType, startTime, endTime, status, WorkspaceName,  WorkspaceId, DatasetName, DatasetId,`ErrorCode, ClusterUri,ActivityId,RequestId, Timestamp |
-        Export-Csv -Path $csvFilePath -Delimiter ";" -Force -NoTypeInformation
-    Write-Host "CSV log file '$csvFilePath' createds"
-}
+# if ($Csv) 
+# {
+#     $csvFilePath = "$Path\$CsvFile"
+#     $historyItems |
+#         Select-Object -Property id, refreshType, startTime, endTime, status, WorkspaceName,  WorkspaceId, DatasetName, DatasetId,`ErrorCode, ClusterUri,ActivityId,RequestId, Timestamp |
+#         Export-Csv -Path $csvFilePath -Delimiter ";" -Force -NoTypeInformation
+#     Write-Host "CSV log file '$csvFilePath' createds"
+# }
 
 # create JSON file
 if ($Json)
