@@ -5,7 +5,7 @@
 Login-PowerBI
 foreach ($i in 0..14) {
     #onderstaande parameter is de enige die je in een andere context zou moeten aanpassen
-    $pathfile = "C:\Users\baeluvi\VRT\DataTeam Financiën - General\PowerBi\Data Files\AuditLogs\"
+    $pathfile = "C:\Users\victor.baelus\OneDrive - OPENLANE Europe\Desktop\testlogs\auditlogs\"
     #bij activatie script wordt huidige datum als input gebruikt, niet inzitten met overlap want duplicaten worden via power query verwijderd en bestanden op zelfde datum overschreven
     #gaat twee weken terug
     $CurrentDate = Get-Date

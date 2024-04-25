@@ -1,0 +1,24 @@
+drill url pnl mapping txt = 
+-- make sure to format this as text with data category 'Web URL', and that no calculation group is affecting this measure (fe add 'text' in its name)
+-- this setup is only tested for ONE filter condition = one value, drilltroughs in Power BI are way more flexible
+-- i think u can provide more filter arguments but maybe it is better scalable to provide these as slicers in your drillthrough rapport (fe years slicers)
+-- example https://learn.microsoft.com/en-us/power-bi/collaborate-share/service-url-filters : &filter=Store/Territory eq 'NC' and Store/Chain eq 'Fashions Direct'
+
+VAR _weburl = 
+-- copy paste url up until "power-bi" part; the key after group refers to workspace. the key after report to the specific report, the part after Reportsection to the page
+-- take the url of the DRILLTROUGH page, because that is were u are referring to, it is best if u first clear all the filter from that page
+"https://app.powerbi.com/groups/d3c3a146-f09a-4300-aa38-ebc086c5020c/reports/122be102-5563-4c8c-970d-4d2dd5a1dbf6/ReportSection8e578567c45e505d49fb?experience=power-bi"
+
+VAR _context = 
+-- the first time u set this up i recommend using a hardcoded example such as Taxes rather than a dynamic value
+SELECTEDVALUE('dim mapping pnl excel'[Childname]) -- fe "Taxes"
+
+VAR _result=
+-- the part that u still have to change is the table/column which filters the drill through (and which will be set equal to the context)
+-- u have to replace special characters with their unicode equivalent: for a ' ' this is _x0020_
+-- if it does not work it will probably be because of this part of the code
+_weburl & " &filter=dim_x0020_mapping_x0020_pnl_x0020_excel/Childname eq '" & _context & "'"
+
+RETURN
+-- u could add this measure as a conditional formatting with URL option to an existing column (fe UNICHAR(128712))
+    _result
